@@ -146,4 +146,49 @@ Thus, n = 2 is a SINGLETON STATIONARY FIXED POINT on the tape, NOT an
 oscillating 2-cycle between 1 and 2!
 The binary kernel s = '01' translates rigidly rightward at group velocity
 v = 2 cells per pass with Delta_tail = 2 and Delta_head = 2 indefinitely.
+[NOTE 09: Bilateral Dual-Arm Streaming & Conserved Soliton Momentum on Bi-Infinite Lattices]
+Topology: Bi-infinite integer lattice Z with stationary central phase anchor @ at cell 0:
+    ... @^omega [N_k^L] [$] ... [N_1^L] @ [N_1^R] [$] ... [N_m^R] @^omega ...
+Architectural Modes:
+1. Oscillating Butterfly Transducer: A single autonomous 5-state head sweeps across the
+   positive arm Z^+ (pass t on N^R), rewinds to cell 0 in State E, inverts spatial parity
+   upon reflecting off @, sweeps across negative arm Z^- (pass t on N^L), and rewinds.
+   Achieves 2x computational throughput per complete oscillation cycle with zero extra states.
+2. Dual-Head Asynchronous Systolic Array: Two independent heads M'_R and M'_L execute
+   concurrently on Z^+ and Z^-. Central sentinel @ serves as an impenetrable zero-leakage
+   hardware barrier (A reflects right, A_L reflects left); head-to-head collision probability
+   is provably zero (P_collision = 0).
+Conserved Soliton Momentum:
+Under symmetric input vectors N^L = N^R, asymptotic soliton translation velocities satisfy:
+    v_R = +2 cells/pass (rightward), v_L = -2 cells/pass (leftward).
+Net spatial computational momentum of the tape configuration is strictly conserved:
+    P_net = sum(v_i) = (+2) + (-2) = 0.
+The central boundary @ remains a stationary barycenter, generating twin coherent
+soliton crystals expanding symmetrically into opposite infinite horizons.
+
+
+[NOTE 10: Theoretical Blueprint: Vectorized Universal Reversible Turing Machines (V-URTM)]
+Core Paradigm: Overcoming the 50-year scalar limitation of Universal Reversible Turing
+Machines (Bennett 1973, Morita 1990) by streaming concurrent programs on a single 1D tape.
+Key Theorems and Mechanisms:
+1. Generalized Regime I Buffer Invariant:
+   For an arbitrary vector of programs and data <(P_1, x_1), (P_2, x_2), ...>, let S(P_i, t)
+   denote the dynamic space complexity expansion of program P_i at step t.
+   Inter-program tape isolation is provably preserved for all t >= 0 whenever initial
+   delimiters satisfy:
+       B_i >= max_t [ S(P_i, t) - S(P_{i+1}, t) ] + 2.
+2. Dissipationless Spatial Wake Pumping:
+   Instead of Bennett's compute-copy-uncompute cycle (which requires 2x time overhead and
+   bulky local history stacks), the forward streaming sweep pumps lost valuation/entropy
+   directly into the inter-word spatial wakes. A concurrent backward sweep consumes the wake
+   to uncompute reversibly, achieving zero Landauer thermodynamic dissipation with non-zero
+   streaming throughput.
+3. Topological Phase-Transition Halting (Soliton Freezing):
+   Halting of an individual program P_i does not require an omnibus HALT state that kills
+   the transducer. Active computation manifests as non-uniform spatial drift (fluid phase);
+   program completion is signaled by phase-locking into a rigid soliton pulse traveling at
+   constant characteristic group velocity (crystal phase). Other concurrent words continue
+   evaluating uninterrupted.
+Target Milestone: Formulate minimal transition rules for a tag-system or Rule 110-based
+V-URTM for post-RC 2027 journal submission.
 ================================================================================
