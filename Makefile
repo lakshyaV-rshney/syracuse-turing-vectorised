@@ -1,37 +1,34 @@
 # ==============================================================================
 # Makefile: Autonomous Multi-Trajectory Syracuse Transducer (M') Ecosystem
-# Target Venue: IEEE / RC 2027
+# Target: Verification, Simulation, and Paper Compilation
 # ==============================================================================
 
 MAIN = syracuse_cyclic_array
-TEX = $(MAIN).tex
-PDF = $(MAIN).pdf
+TEX = paper/$(MAIN).tex
+PDF = paper/$(MAIN).pdf
 PY = python
-ZIP = syracuse_mprime_artifact.zip
+SIM = simulator/verify_cyclic_transducer.py
 
-.PHONY: all pdf test clean lint preflight archive
+.PHONY: all pdf test clean lint preflight
 
 all: test pdf
 
 pdf: $(PDF)
 
 $(PDF): $(TEX)
-	pdflatex -interaction=nonstopmode $(TEX)
-	pdflatex -interaction=nonstopmode $(TEX)
+	cd paper && pdflatex -interaction=nonstopmode $(MAIN).tex
+	cd paper && pdflatex -interaction=nonstopmode $(MAIN).tex
 
 test:
-	$(PY) verify_cyclic_transducer.py
+	$(PY) $(SIM)
 
 lint:
-	@echo "Checking $(MAIN).log for overfull boxes and undefined references..."
-	@$(PY) -c "import sys; log = open('$(MAIN).log', 'r', errors='ignore').read(); ovf = [l for l in log.splitlines() if 'Overfull' in l]; print(f'Overfull boxes found: {len(ovf)}'); [print('  ' + l) for l in ovf[:5]]; undef = [l for l in log.splitlines() if 'undefined' in l.lower()]; print(f'Undefined warnings found: {len(undef)}'); [print('  ' + l) for l in undef[:5]]"
+	@echo "Checking paper/$(MAIN).log for overfull boxes and undefined references..."
+	@$(PY) -c "log = open('paper/$(MAIN).log', 'r', errors='ignore').read(); ovf = [l for l in log.splitlines() if 'Overfull' in l]; print(f'Overfull boxes: {len(ovf)}'); undef = [l for l in log.splitlines() if 'undefined' in l.lower()]; print(f'Undefined warnings: {len(undef)}')"
 
 clean:
-	@$(PY) -c "import os, glob; [os.remove(f) for ext in ['*.aux', '*.log', '*.out', '*.fls', '*.fdb_latexmk', '*.toc'] for f in glob.glob(ext)]"
+	@$(PY) -c "import os, glob; [os.remove(f) for ext in ['paper/*.aux', 'paper/*.log', 'paper/*.out', 'paper/*.fls', 'paper/*.fdb_latexmk', 'paper/*.toc', 'paper/*.synctex.gz'] for f in glob.glob(ext)]"
 	@echo "Clean completed."
 
 preflight: test pdf lint
 	@echo "All preflight verification checks completed successfully."
-
-archive: test pdf
-	@$(PY) -c "import zipfile, os; files = ['$(TEX)', '$(PDF)', 'verify_cyclic_transducer.py', 'Makefile', 'challenge.txt', 'notes.txt', 'comparator.lean', 'lakefile.lean', 'lean-toolchain', 'Syracuse.lean', os.path.join('Syracuse', 'CyclicTransducer.lean')]; z = zipfile.ZipFile('$(ZIP)', 'w', zipfile.ZIP_DEFLATED); [z.write(f) for f in files]; z.close(); print(f'Submission archive generated: $(ZIP) ({os.path.getsize(\"$(ZIP)\")} bytes)')"
