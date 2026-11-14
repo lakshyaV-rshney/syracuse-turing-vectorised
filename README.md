@@ -1,5 +1,6 @@
 # Autonomous Multi-Trajectory Syracuse Transducers: Collision-Free Tape Architectures, Drift Invariants, and Asymptotic Soliton Arrays
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24223304.svg)](https://doi.org/10.5281/zenodo.24223304)
 [![Lean 4](https://img.shields.io/badge/Lean_4-v4.14.0-blue.svg)](https://leanprover.github.io/)
 [![Formal Verification](https://img.shields.io/badge/Verification-0_sorry-success.svg)](lean/CyclicTransducer.lean)
 [![Format](https://img.shields.io/badge/Format-IEEEtran_4.0_pages-blue.svg)](paper/syracuse_cyclic_array.pdf)
@@ -178,8 +179,9 @@ pdflatex -interaction=nonstopmode syracuse_cyclic_array.tex
   title     = {Autonomous Multi-Trajectory Syracuse Transducers: Collision-Free Tape Architectures, Drift Invariants, and Asymptotic Soliton Arrays},
   journal   = {arXiv preprint},
   year      = {2026},
-  note      = {Formal verification in Lean 4 (0 sorrys)},
-  url       = {https://github.com/lakshyaV-rshney/syracuse-turing-vectorised}
+  doi       = {10.5281/zenodo.24223304},
+  url       = {https://doi.org/10.5281/zenodo.24223304},
+  note      = {Formal verification in Lean 4 (0 sorrys)}
 }
 ```
 
