@@ -1,1 +1,0 @@
-import Syracuse.CyclicTransducer

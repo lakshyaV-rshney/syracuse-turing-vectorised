@@ -1,7 +1,7 @@
 # Autonomous Multi-Trajectory Syracuse Transducers: Collision-Free Tape Architectures, Drift Invariants, and Asymptotic Soliton Arrays
 
 [![Lean 4](https://img.shields.io/badge/Lean_4-v4.14.0-blue.svg)](https://leanprover.github.io/)
-[![Formal Verification](https://img.shields.io/badge/Verification-0_sorry-success.svg)](lean/comparator.lean)
+[![Formal Verification](https://img.shields.io/badge/Verification-0_sorry-success.svg)](lean/CyclicTransducer.lean)
 [![Format](https://img.shields.io/badge/Format-IEEEtran_4.0_pages-blue.svg)](paper/syracuse_cyclic_array.pdf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -11,7 +11,7 @@ This repository provides the formal specification, **machine-checked Lean 4 veri
 
 ## 1. Abstract & System Model
 
-While conventional arithmetic Turing machines evaluate scalar, single-shot operands on isolated tapes, streaming multi-trajectory evaluation introduces non-trivial spatial coupling: asymmetric bit-length expansion ($\Delta L \approx \log_2 3 - k$) during Collatz ascent can induce inter-word carry overrun. 
+While conventional arithmetic Turing machines evaluate scalar, single-shot operands on isolated tapes, streaming multi-trajectory evaluation introduces non-trivial spatial coupling: asymmetric bit-length expansion (`ΔL ≈ log₂(3) − k`) during Collatz ascent can induce inter-word carry overrun. 
 
 Machine `M'` operates on a standard right-infinite tape:
 
@@ -25,9 +25,9 @@ In each physical pass `t`, `M'` computes the single-pass dyadic affine operator:
 
 $$\widetilde{T}(n) = \frac{3 \cdot \text{odd}(n) + 1}{2}$$
 
-where on-the-fly division by 2 is performed by overwriting the first sum bit with blank `$`. Residual $(\nu_2 - 1)$ divisions manifest as trailing zeros on the tape, which are consumed on the subsequent pass.
+where on-the-fly division by 2 is performed by overwriting the first sum bit with blank `$`. Residual (`ν₂ − 1`) divisions manifest as trailing zeros on the tape, which are consumed on the subsequent pass.
 
-![Single-word tape cell coordinates and bit-serial execution](figures/fig1_tape_execution.png)
+![Single-word tape cell coordinates and bit-serial execution](paper/figures/fig1_tape_execution.png)
 
 *Figure 1: Single-word tape cell coordinates and bit-serial execution of `M'` for N = 11 (`1101` -> `10001` = 17). Left sentinel `@` remains stationary at cell 0. Blank `$` overwrites the consumed LSB at cell 1 (on-the-fly /2 odd-core reduction, Δtail = 1). Carries propagate rightward into the `$` buffer, advancing head by Δhead = 2.*
 
@@ -40,8 +40,8 @@ Transducer `M'` is formalized over state set `Q = {A, B, C, D, E}` and alphabet 
 | State | Symbol `@` | Symbol `$` | Symbol `0` | Symbol `1` | Operational Semantics |
 | :---: | :---: | :---: | :---: | :---: | :--- |
 | **A** | `(@, L, E)` | `($, R, A)` | `($, R, A)` | `($, R, B)` | Normalization, odd-core detection, right reflection |
-| **B** | `(0, R, C)` | `(0, R, C)` | `(0, R, C)` | `(1, R, B)` | Forward carry addition ($c_{\text{in}} = 0$) / Carry flush 1 |
-| **C** | `(1, R, A)` | `(1, R, A)` | `(1, R, D)` | `(0, R, B)` | Forward carry addition ($c_{\text{in}} = 1$) / Carry flush 2 |
+| **B** | `(0, R, C)` | `(0, R, C)` | `(0, R, C)` | `(1, R, B)` | Forward carry addition (`c_in = 0`) / Carry flush 1 |
+| **C** | `(1, R, A)` | `(1, R, A)` | `(1, R, D)` | `(0, R, B)` | Forward carry addition (`c_in = 1`) / Carry flush 2 |
 | **D** | `⊥` | `⊥` | `(0, R, D)` | `(1, R, C)` | Internal zero carry propagation |
 | **E** | `(@, R, A)` | `($, L, E)` | `(0, L, E)` | `(1, L, E)` | Non-destructive leftward rewind to cell 0 |
 
@@ -54,9 +54,9 @@ For any arbitrary input vector `N = <N1, ..., Nn>`, inter-word collision is prov
 
 $$S_i \ge \mathcal{D}_{\max}(N_i, N_{i+1}) + 2$$
 
-where $\mathcal{D}_{\max}$ is the cumulative drift differential. Modifying writes are strictly bounded by $\text{write}_{\max}(N_i, t) = \text{head}(N_i, t) + 2 < \text{tail}(N_{i+1}, t)$, preventing carry overrun.
+where `D_max` is the cumulative drift differential. Modifying writes are strictly bounded by `write_max(N_i, t) = head(N_i, t) + 2 < tail(N_{i+1}, t)`, preventing carry overrun.
 
-![Space-time inter-word displacement mechanics](figures/fig2_drift_mechanics.png)
+![Space-time inter-word displacement mechanics](paper/figures/fig2_drift_mechanics.png)
 
 *Figure 2: Space-time inter-word displacement mechanics under `M'`. In vector mode, inter-word coupling is fully governed by the single 1D spatial recurrence variable Δgap = Δtail - Δhead. Maintaining gap >= 2 preserves complete scalar operational equivalence for each word across the pipeline.*
 
@@ -78,7 +78,7 @@ T_∞ = @ $^d0 s $^d1 s $^d2 ... s @^ω,    di >= 2
 ```
 
 ### 3.4 Reversible Inversion via Spatial Drift Decoupling
-While `T_tilde` is locally non-injective over odd integers, absolute and relative displacements `Δtail(N, t) = max{1, k_{t-1}}` record lost valuation entropy directly onto the spatial tape wake. A companion left-anchored transducer `M'_rev` reconstructs unique odd ancestors `n = (m · 2^k - 1)/3` sequentially without auxiliary registers.
+While `T_tilde` is locally non-injective over odd integers, absolute and relative displacements `Δtail(N, t) = max{1, k_{t-1}}` record lost valuation entropy directly onto the spatial tape wake. A companion left-anchored transducer `M'_rev` reconstructs unique odd ancestors `n = (m · 2^k − 1)/3` sequentially without auxiliary registers.
 
 ---
 
@@ -88,17 +88,14 @@ While `T_tilde` is locally non-injective over odd integers, absolute and relativ
 syracuse-turing-vectorised/
 |-- paper/
 |   |-- syracuse_cyclic_array.tex      # Full IEEEtran 4.0-page manuscript source
-|   `-- syracuse_cyclic_array.pdf      # Compiled publication-ready PDF
-|-- figures/
-|   |-- fig1_tape_execution.png        # Figure 1: Single-word tape execution
-|   `-- fig2_drift_mechanics.png       # Figure 2: Space-time drift mechanics
+|   |-- syracuse_cyclic_array.pdf      # Compiled publication-ready PDF
+|   `-- figures/
+|       |-- fig1_tape_execution.png    # Figure 1: Single-word tape execution
+|       `-- fig2_drift_mechanics.png   # Figure 2: Space-time drift mechanics
 |-- lean/
 |   |-- lakefile.lean                  # Lake package configuration
 |   |-- lean-toolchain                 # Pinned to leanprover/lean4:v4.14.0
-|   |-- Syracuse.lean                  # Root library import
-|   |-- Syracuse/
-|   |   `-- CyclicTransducer.lean      # Formal M' specification & theorems
-|   `-- comparator.lean                # Standalone formal verification comparator
+|   `-- CyclicTransducer.lean          # Formal M' specification & theorems (0 sorrys)
 |-- simulator/
 |   `-- verify_cyclic_transducer.py    # Discrete-event regression harness
 |-- docs/
@@ -114,7 +111,7 @@ syracuse-turing-vectorised/
 
 ## 5. Machine-Checked Lean 4 Verification
 
-The formal certification is organized in `lean/comparator.lean` and `lean/Syracuse/CyclicTransducer.lean` (**0 `sorry`s, 0 unproved axioms**):
+The formal certification is contained in `lean/CyclicTransducer.lean` (**0 `sorry`s, 0 unproved axioms**):
 
 | # | Formal Theorem Identifier | Mathematical Invariant | Proof Technique |
 | :---: | :--- | :--- | :---: |
@@ -162,7 +159,7 @@ Inside `lean/`:
 ```bash
 lake build
 ```
-Or paste `lean/comparator.lean` into the [Lean 4 Web Editor](https://live.lean-lang.org/).
+Or paste `lean/CyclicTransducer.lean` into the [Lean 4 Web Editor](https://live.lean-lang.org/).
 
 ### 6.3 Recompiling the IEEE Manuscript
 Inside `paper/`:
