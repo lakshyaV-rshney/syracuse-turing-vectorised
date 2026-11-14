@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this formalization or theoretical artifact, please cite it as below."
+title: "Autonomous Multi-Trajectory Syracuse Transducers: Collision-Free Tape Architectures, Drift Invariants, and Asymptotic Soliton Arrays"
+authors:
+  - family-names: Varshney
+    given-names: Lakshya
+    orcid: "https://orcid.org/0009-0004-7688-1091"
+    affiliation: "Department of Electronics and Telecommunication Engineering, COEP Technological University, Pune, Maharashtra, India"
+    email: "creativelakshya.1@gmail.com"
+date-released: 2026-11-14
+url: "https://github.com/lakshyaV-rshney/syracuse-turing-vectorised"
+repository-code: "https://github.com/lakshyaV-rshney/syracuse-turing-vectorised"
+keywords:
+  - Collatz conjecture
+  - Syracuse operator
+  - Turing transducers
+  - Bit-serial arithmetic
+  - Vectorized streaming
+  - Spatial collision mechanics
+  - Soliton cellular dynamics
+  - Formal verification
+  - Lean 4
+license: MIT

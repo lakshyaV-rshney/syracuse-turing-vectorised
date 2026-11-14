@@ -1,0 +1,149 @@
+================================================================================
+TECHNICAL NOTES & CRITICAL AUDIT ARCHIVE: AUTONOMOUS SYRACUSE TRANSDUCERS
+Project: Multi-Trajectory Syracuse Transducer (M') Tape Dynamics
+Author: Lakshya Varshney, Department of E&TC, COEP Technological University
+Archive File: November 2026/Syracuse/notes.txt
+================================================================================
+
+[NOTE 01: Trailing-Zero Output Multiplicity and Tail Shift Analysis]
+Originally Lemma 1 assertional defect:
+In an arithmetic bit-serial adder evaluating x + 2x + 1:
+The adder performs division by 2 on-the-fly by overwriting the first sum bit
+(which is always 0 for 3*odd + 1) with blank $.
+Consequently, for any odd integer n with valuation k = nu_2(3n + 1):
+The number of trailing zeros written to tape is (k - 1), NOT k.
+
+Modular Case Analysis:
+Case 1: n = 3 (mod 4)
+  Here 3n + 1 = 10 = 2 (mod 4), so nu_2(3n+1) = 1 (k = 1).
+  The output word written to tape contains 1 - 1 = 0 trailing zeros!
+  On the subsequent pass t, State A reads 0 trailing zeros and exactly 1 odd-core
+  bit (b_0 = 1).
+  Therefore, Delta_tail(N, t) = 1 (NOT 2).
+
+Case 2: n = 1 (mod 4)
+  Here 3n + 1 = 4 = 0 (mod 4), so nu_2(3n+1) >= 2 (k >= 2).
+  The output word written to tape contains k - 1 >= 1 trailing zeros.
+  On the subsequent pass t, State A consumes (k - 1) zeros plus 1 odd-core bit.
+  Therefore, Delta_tail(N, t) = (k - 1) + 1 = k >= 2.
+
+Conclusion:
+Delta_tail(N, t) in {1, k}, taking value 1 whenever the previous state satisfies
+T^{t-1}(N) = 3 (mod 4).
+
+
+[NOTE 02: Counterexample to Universal O(1) Buffer Sufficiency (N = <27, 27>, S = 3)]
+Originally Theorem 2 claimed that S_i = 3 is unconditionally sufficient for all
+inputs because Delta_gap_t >= 0 for all t >= 1.
+Because Delta_tail can equal 1 (Note 01), an ascending word with Delta_head = 2
+induces a net buffer compression:
+    Delta_gap_t = Delta_tail(N_x, t) - Delta_head(N_{x-1}, t) = 1 - 2 = -1.
+
+Verified Empirical Counterexample:
+Input: N = <27, 27>, Spacing S = 3.
+Trajectory of 27:
+  Pass 0: 27  (tape: @11011$$$11011$$$@)         gap = 3
+  Pass 1: 41  (tape: @$100101$$100101$@)        gap = 2
+  Pass 2: 31  (tape: @$$011111$$011111@)        gap = 2
+  Pass 3: 47  (tape: @$$$$111101$$111101@)      gap = 2
+  Pass 4: 71  (tape: @$$$$$1110001$1110001@)    gap = 1  [Ascent compression]
+  Pass 5: 107 (tape: @$$$$$$1101011$1101011@)   gap = 1
+  Pass 6: 161 (tape: @$$$$$$$1000010010000101@) gap = 0  [COLLISION & FUSION]
+
+Word 1 overruns Word 2 at Pass 6 with zero separating blanks, fusing into a
+single corrupted arithmetic stream.
+
+Resolution:
+Regime I (Asymptotic Buffer Sizing) is the primary universal theorem:
+    S_i >= D_max(N_i, N_{i+1}) + 2
+Guaranteeing gap_t >= 2 for all passes t >= 0 (strictly maintaining
+write_max = head + 2 < tail = head + 1 + gap).
+For N = <27, 27>, D_max = 5, so S = 15 >= 7 completely prevents overrun for all passes.
+
+
+[NOTE 03: Minimal 5-State Architecture vs Redundant 6-State Machine]
+In the earlier 6-state draft:
+- delta(A, @) = bot caused a fatal head crash at the right horizon.
+- delta(C, @) = (@, L, F) left State E completely unreachable.
+- delta(F, $) = bot crashed immediately upon bouncing off cell 0.
+
+The minimal 5-state transducer M' with states Q = {A, B, C, D, E}:
+- State A: Normalization, odd core detection, and right horizon reflection:
+    delta(A, @) = (@, L, E)
+- State B: Forward carry addition (S = 2), terminal carry flush:
+    delta(B, $) = (0, R, C), delta(B, @) = (0, R, C)
+- State C: Forward carry addition (S = 1), terminal carry flush:
+    delta(C, $) = (1, R, A), delta(C, @) = (1, R, A)
+- State D: Forward carry addition (S = 0)
+- State E: Leftward rewind to cell 0:
+    delta(E, 0) = (0, L, E), delta(E, 1) = (1, L, E), delta(E, $) = ($, L, E)
+    delta(E, @) = (@, R, A)
+
+Total transitions: 18 active transitions over 20 domain cells (only (D, $) and (D, @) are undefined).
+Eliminates dead state E and redundant state F; zero head deadlocks.
+
+
+[NOTE 04: Transducer Operator Semantics: T(n) vs T_tilde(n)]
+The machine M' does not compute the full multi-division Syracuse operator:
+    T(n) = (3n + 1) / 2^{nu_2(3n+1)}
+in a single physical pass.
+Instead, it computes the accelerated dyadic affine map:
+    T_tilde(n) = (3 * odd(n) + 1) / 2
+The single factor of 1/2 is computed on-the-fly during binary addition.
+The remaining (nu_2 - 1) divisions are manifested as (nu_2 - 1) trailing zeros
+on the tape, which are subsequently consumed by State A on pass t + 1.
+Over the entire orbit, the cyclic sequence of odd cores visited on the tape
+is isomorphic to the standard Syracuse trajectory.
+
+
+[NOTE 05: Exact Bit-Length Invariant for Synchronized Trajectories]
+Original naive formulation:
+Stating that T^t(27) = 3 (mod 4) persistently was defective because 41 = 1 (mod 4)
+has 2-adic valuation nu_2(3*41 + 1) = nu_2(124) = 2, so Delta_tail(27, 2) = 2.
+Exact formulation:
+For any identical pair of trajectories N_1 = N_2 = N:
+    Delta_gap_t = Delta_tail(N, t) - Delta_head(N, t)
+Since head = tail + L - 1, we have Delta_head = Delta_tail + Delta_L.
+Therefore, universally for synchronized identical words:
+    Delta_gap_t = -Delta_L(N, t)
+For N = 27, the binary word lengths on tape evolve as:
+    L: 5 -> 6 -> 6 -> 6 -> 7 -> 7 -> 8
+Consequently, buffer compression occurs precisely when word length expands:
+    gap: 3 (-1)-> 2 (0)-> 2 (0)-> 2 (-1)-> 1 (0)-> 1 (-1)-> 0
+Collapsing to zero blanks at Pass 6. Formally proved in Lean 4 as
+theorem identical_words_gap_compression.
+
+
+[NOTE 06: Spatial Wake Inversion & Left-to-Right Decoupling]
+Arithmetic backward recovery: n = (m * 2^k - 1) / 3 is an exact bijection on
+admissible pairs S_admit = {(m,k) : m * 2^k = 1 (mod 3)}.
+However, on the physical tape:
+- Lead word N_1: distance from static boundary sentinel @ records absolute
+  cumulative Delta_tail(N_1, t), directly preserving k.
+- Interior words N_{x >= 2}: delimiter gap records relative displacement
+  Delta_tail(N_x) - Delta_head(N_{x-1}), conflating Word x valuation with
+  Word x-1 carry growth.
+Deterministic reconstruction requires sequential left-to-right decoding:
+inverting N_1 first against @, computing Delta_head(N_1), uncoupling
+Delta_tail(N_2) from gap_t, and propagating along the array.
+
+
+[NOTE 07: Transducer State Minimality Complexity Status]
+Machine M' uses 5 states {A, B, C, D, E}.
+While verified autonomous, deadlock-free, and collision-safe, 5-state
+minimality is framed as an open complexity problem: proving whether an
+autonomous 4-state transducer can compute iterated Syracuse over { @, $, 0, 1 }
+under identical Little-Endian binary tape encodings remains open.
+
+
+[NOTE 08: Attractor Fixed-Point Dynamics vs Limit Cycle Oscillation]
+Under the single-pass affine transducer operator:
+    T_tilde(n) = (3 * odd(n) + 1) / 2
+When odd-core reaches 1:
+    T_tilde(1) = (3*1 + 1) / 2 = 2 (binary kernel '01')
+    T_tilde(2) = (3 * odd(2) + 1) / 2 = (3*1 + 1) / 2 = 2 (binary kernel '01')
+Thus, n = 2 is a SINGLETON STATIONARY FIXED POINT on the tape, NOT an
+oscillating 2-cycle between 1 and 2!
+The binary kernel s = '01' translates rigidly rightward at group velocity
+v = 2 cells per pass with Delta_tail = 2 and Delta_head = 2 indefinitely.
+================================================================================

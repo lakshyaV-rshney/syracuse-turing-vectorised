@@ -1,0 +1,20 @@
+# Build and LaTeX artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+
+# Lean build artifacts
+.lake/
+lake-packages/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS generated
+.DS_Store
+Thumbs.db
