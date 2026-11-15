@@ -191,4 +191,42 @@ Key Theorems and Mechanisms:
    evaluating uninterrupted.
 Target Milestone: Formulate minimal transition rules for a tag-system or Rule 110-based
 V-URTM for post-RC 2027 journal submission.
+[NOTE 11: Spacetime Duality: Temporal Wake Pipelining and Soliton Wave-Train Injection]
+Theoretical Duality:
+The spatial buffer formulation of Regime I (S_i >= D_max(N_i, N_{i+1}) + 2 at t = 0)
+admits a natural, dual realization in the time domain via controlled injection latency
+at the boundary reflector @ (cell 0). Rather than pre-allocating wide static tape
+buffers upfront, inter-word separation is synthesized dynamically through temporal
+phase delays.
+
+1. Temporal Regime I (Dynamic Wake Injection / Self-Carving Buffers):
+   - Configuration: Tape initializes at t = 0 with lead word N_1 only:
+         T_0 = @ N_1 [$] @^omega
+   - Dynamics: Because State A advances the word tail by Delta_tail(N_1, t) >= 1 cells
+     on every single pass, N_1 continuously clears an expanding trail of blank symbols $
+     behind its trailing edge.
+   - Injection Condition: Successive word N_{x+1} is injected into cell 1 (adjacent to @)
+     at pass t = Delta t_x whenever the dynamically carved wake satisfies:
+         tail(N_x, Delta t_x) - 1 >= D_max(N_x, N_{x+1}) + 2
+   - Result: Zero a priori memory allocation overhead. The arithmetic trajectory of the
+     preceding word physically synthesizes the exact collision-free buffer required
+     for its successor in real time.
+
+2. Temporal Regime II (Quiescent Soliton Wave-Train Injection / The Soliton Factory):
+   - Injection Gating: Successive word N_{x+1} is held in an external queue until the
+     lead word N_x completely clears its transient Collatz ascent and reaches the unique
+     stationary fixed point N_x = 2 (binary kernel s = '01').
+   - Attractor Invariance: Upon entering the attractor, N_x freezes into a rigid soliton
+     translating rightward at uniform group velocity v = 2 cells/pass with zero bit-length
+     fluctuation (Delta L = 0, Delta_head = 2).
+   - Invariant Safety: Injecting N_{x+1} behind an established soliton guarantees that the
+     leading boundary pulls away at constant maximum speed v = 2, dramatically reducing
+     inter-word compression pressure even under explosive ascent of N_{x+1}.
+   - Physical Outcome: The transducer operates as an autonomous "Soliton Extruder":
+     chaotic, turbulent integer inputs are sequentially converted within the near-origin
+     reaction zone and emitted into the rightward horizon as a perfectly ordered,
+     phase-locked periodic wave train of solitons.
+
+Target Horizon: Formulate rigorous queueing bounds and state machine extensions for
+autonomous multi-word temporal injection in the forthcoming journal paper.
 ================================================================================
